@@ -1,0 +1,98 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap");
+
+:root {
+	--bg-primary: #232323;
+	--bg-secondary: #fff;
+	--bg-terciary: #000;
+
+	--font-primary: "Quicksand";
+
+	--font-small: 0.75rem;
+	--font-regular: 1rem;
+	--font-medium: 1.25rem;
+	--font-large: 1.5rem;
+
+	--qs-light: 300;
+	--qs-regular: 400;
+	--qs-medium: 500;
+	--qs-bold: 700;
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	font-family: var(--font-primary);
+	font-weight: var(--qs-medium);
+	font-size: var(--font-medium);
+}
+
+body {
+	width: 100%;
+	height: 100vh;
+	background-color: var(--bg-primary);
+	color: var(--bg-secondary);
+}
+
+.header {
+	width: 100%;
+	height: 5rem;
+
+	background-color: var(--bg-terciary);
+
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+
+	padding: 0 40px;
+}
+
+.navbar {
+	height: 100%;
+}
+
+.navbar .hamburger {
+	display: none;
+}
+
+.list {
+	height: 100%;
+
+	display: flex;
+	flex-direction: row;
+
+	gap: 20px;
+	list-style: none;
+}
+
+.item {
+	width: auto;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	transition: 300ms linear;
+}
+
+.item:hover {
+	& .border {
+		width: 100%;
+	}
+}
+
+.item a {
+	text-decoration: none;
+	color: var(--bg-secondary);
+}
+
+.item .border {
+	height: 2px;
+	width: 0px;
+	display: block;
+	background-color: var(--bg-secondary);
+
+	transition: width 300ms linear;
+}
