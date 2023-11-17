@@ -119,3 +119,19 @@ body {
 	background-color: #000080; /* Cor de fundo azul-escuro para mesa selecionada */
 	color: #fff; /* Cor do texto para mesa selecionada */
 }
+
+table {
+	border: var(--root-border-width) var(--root-border-style) var(--root-primary-color);
+	border-collapse: collapse;
+}
+
+td,
+th {
+	padding: var(--root-half-space);
+	border: var(--root-border-width) var(--root-border-style) var(--root-primary-color);
+}
+
+th {
+	background-color: var(--root-primary-color);
+	color:#eee;
+}
