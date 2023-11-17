@@ -96,3 +96,26 @@ body {
 
 	transition: width 300ms linear;
 }
+
+.mesa {
+	width: 100px;
+	height: 100px;
+	display: inline-block;
+	margin: 10px;
+	text-align: center;
+	line-height: 100px;
+	cursor: pointer;
+}
+
+.mesa.fechada {
+	background-color: #ccc; /* Cor de fundo específica para mesa fechada */
+}
+
+.mesa.aberta {
+	background-color: #add8e6; /* Cor de fundo azul-claro para mesa aberta */
+}
+
+.mesa.selecionada {
+	background-color: #000080; /* Cor de fundo azul-escuro para mesa selecionada */
+	color: #fff; /* Cor do texto para mesa selecionada */
+}
