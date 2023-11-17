@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
       tbody.appendChild(tr);
     });
   }
-});
+
   
 /**
  * @enum {string} ProductType - Tipos de Produtos.
@@ -418,3 +418,5 @@ Menu.default = new Menu().addProducts(
 	new Product("Pão", "E", 0.8),
 	new Product("Água", "B", 1.2)
 );
+
+});
