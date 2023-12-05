@@ -3,11 +3,19 @@
 function irParaHomePage() {
 	window.location.href = "/frontend/index.html";
 }
+
 document.addEventListener("DOMContentLoaded", function () {
 	const mesasContainer = document.getElementById("mesas-container");
 	const mesasLink = document.getElementById("mesas-link");
 	const produtosContainer = document.getElementById("produtos-container");
 	const produtosLink = document.getElementById("produtos-link");
+	let formPedido = document.getElementById("order-form-container");
+	let btnCriar = document.getElementById("btnCriar");
+	let btnEditar = document.getElementById("btnEditar");
+	let btnApagar = document.getElementById("btnApagar");
+	let btnFechar = document.getElementById("btnFechar");
+
+	const totalMesas = 10;
 
 	mesasLink.addEventListener("click", function (e) {
 		exibirMesasLayout();
@@ -17,21 +25,22 @@ document.addEventListener("DOMContentLoaded", function () {
 		exibirProdutosLayout();
 	});
 
+	//! -----------------------------------------------------------------------------------
+
 	function exibirMesasLayout() {
 		mesasContainer.style.display = "block";
 		produtosContainer.style.display = "none";
 
-		mesasContainer.innerHTML = ""; // Limpar o conteúdo anterior
-
-		const totalMesas = 10;
+		mesasContainer.replaceChildren(); // Limpar o conteúdo anterior
 
 		for (let i = 1; i <= totalMesas; i++) {
 			const mesa = document.createElement("div");
 			mesa.classList.add("mesa");
-			mesa.textContent = `${i}`;
+			mesa.appendChild(document.createTextNode(i));
 			mesa.dataset.numeroMesa = i;
 
-			mesa.addEventListener("click", function (e) {
+			mesa.addEventListener("click", (e) => {
+				console.log(e.target);
 				selecionarMesa(mesa);
 			});
 
@@ -39,19 +48,61 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	}
 
-	function selecionarMesa(mesaSelecionada) {
+	function selecionarMesa(mesa) {
 		const mesas = document.querySelectorAll(".mesa");
 
-		mesas.forEach((mesa) => mesa.classList.remove("selecionada", "aberta"));
+		mesas.forEach((m) => m.classList.remove("selecionada", "aberta"));
 
-		if (mesaSelecionada.classList.contains("fechada")) {
-			mesaSelecionada.classList.add("aberta");
+		formPedido.style.display = "none";
+
+		if (mesa.classList.contains("fechada")) {
+			mesa.classList.add("aberta");
 		} else {
-			mesaSelecionada.classList.add("selecionada");
+			mesa.classList.add("selecionada");
+			formPedido.style.display = "block";
 		}
 	}
 
+	btnCriar.addEventListener("click", (e) => {
+		let currentTable = document.getElementsByClassName("mesa selecionada")[0];
+		criarPedido(currentTable);
+	});
+
+	function criarPedido(mesa) {
+		console.log(`Criar Pedido ${mesa.textContent}`);
+	}
+
+	btnEditar.addEventListener("click", (e) => {
+		let currentTable = document.getElementsByClassName("mesa selecionada")[0];
+		editarPedido(currentTable);
+	});
+
+	function editarPedido() {
+		console.log("Editar Pedido");
+	}
+
+	btnApagar.addEventListener("click", (e) => {
+		let currentTable = document.getElementsByClassName("mesa selecionada")[0];
+		apagarPedido(currentTable);
+	});
+
+	function apagarPedido() {
+		console.log("Apagar Pedido");
+	}
+
+	btnFechar.addEventListener("click", (e) => {
+		let currentTable = document.getElementsByClassName("mesa selecionada")[0];
+		fecharPedidos(currentTable);
+	});
+
+	function fecharPedidos() {
+		formPedido.style.display = "none";
+	}
+
+	//! ---------------------------------------------------------------------------
+
 	function exibirProdutosLayout() {
+		formPedido.style.display = "none";
 		console.log("Exibindo Produtos Layout");
 		console.log("Mesas Container:", mesasContainer.style.display);
 		console.log("Produtos Container:", produtosContainer.style.display);
@@ -65,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	function exibirProdutos() {
 		// Your existing logic to display products
-		console.log("Exibindo Produtos");
+		console.log("A exibir Produtos");
 		const menu = new Menu();
 		menu.addProducts(
 			new Product("Produto 1", ProductType.E, 10.0),
@@ -77,10 +128,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		const tbody = table.querySelector("tbody");
 
 		// Add the table header
-		table.querySelector("thead").innerHTML = Product.thead;
+		table.querySelector("thead").appendChild(Product.thead);
 
 		// Clear existing rows in the table body
-		tbody.innerHTML = "";
+		tbody.appendChild(document.createTextNode(""));
 
 		// Add rows for each product in the menu
 		menu.products.forEach((product) => {
@@ -101,13 +152,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	 * @readonly
 	 */
 	let ProductType = {
-		/** Tipo de produto ser uma <b>E</b>ntrada */
 		E: "Entrada",
-		/** Tipo de produto ser uma <b>B</b>ebida */
 		B: "Bebida",
-		/** Tipo de produto ser um <b>P</b>rato Principal */
 		P: "Prato Principal",
-		/** Tipo de produto ser uma <b>S</b>obremesa */
 		S: "Sobremesa",
 	};
 
@@ -182,7 +229,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		html += "</tr>";
 		return html;
 	})();
-
+	//! fim class product
 	/**
 	 * Classe Menu
 	 */
@@ -420,3 +467,5 @@ document.addEventListener("DOMContentLoaded", function () {
 		new Product("Água", "B", 1.2)
 	);
 });
+
+//window.onload = init;
