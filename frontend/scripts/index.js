@@ -1,13 +1,28 @@
 "use strict";
 
+class Table {
+	constructor(tableNumber) {
+		this.tableNumber = tableNumber;
+		this.products = [];
+	}
+
+	addProduct(product) {
+		this.products.push(product);
+	}
+
+	removeProduct(product) {
+		this.products.filter((p) => p !== product);
+	}
+}
+
 function irParaHomePage() {
 	window.location.href = "/frontend/index.html";
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-	const mesasContainer = document.getElementById("mesas-container");
+	const tablesContainer = document.getElementById("mesas-container");
 	const mesasLink = document.getElementById("mesas-link");
-	const produtosContainer = document.getElementById("produtos-container");
+	const productsContainer = document.getElementById("produtos-container");
 	const produtosLink = document.getElementById("produtos-link");
 	let formPedido = document.getElementById("order-form-container");
 	let btnCriar = document.getElementById("btnCriar");
@@ -16,6 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	let btnFechar = document.getElementById("btnFechar");
 
 	const totalMesas = 10;
+	let tables = [];
 
 	mesasLink.addEventListener("click", function (e) {
 		exibirMesasLayout();
@@ -27,24 +43,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	//! -----------------------------------------------------------------------------------
 
-	function exibirMesasLayout() {
-		mesasContainer.style.display = "block";
-		produtosContainer.style.display = "none";
+	/**
+	 * calcula o preço total de produtos de uma mesa
+	 * @param {*} productList
+	 * @returns preço total de produtos de uma mesa
+	 */
+	function calculateTotal(productList) {
+		return productList.reduce((init, curr) => {
+			return (init += curr.price);
+		}, 0.0);
+	}
 
-		mesasContainer.replaceChildren(); // Limpar o conteúdo anterior
+	/**
+	 * metodo auxiliar para atualizar a label do total de produtos de uma mesa
+	 * @param {*} mesa
+	 */
+	function updateTotal(mesa) {
+		let p = document.getElementById("label-total");
+		let total = calculateTotal(mesa.products);
+		p.replaceChildren();
+		p.appendChild(document.createTextNode(`Total: ${total}`));
+	}
+
+	function exibirMesasLayout() {
+		tablesContainer.style.display = "block";
+		productsContainer.style.display = "none";
+
+		tablesContainer.replaceChildren();
 
 		for (let i = 1; i <= totalMesas; i++) {
 			const mesa = document.createElement("div");
 			mesa.classList.add("mesa");
+
 			mesa.appendChild(document.createTextNode(i));
 			mesa.dataset.numeroMesa = i;
+			let table = new Table(i);
+
+			tables.push(table);
 
 			mesa.addEventListener("click", (e) => {
-				console.log(e.target);
 				selecionarMesa(mesa);
+				showCurrentProductsOfTable(tables[mesa.textContent - 1]);
 			});
 
-			mesasContainer.appendChild(mesa);
+			tablesContainer.appendChild(mesa);
 		}
 	}
 
@@ -60,6 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		} else {
 			mesa.classList.add("selecionada");
 			formPedido.style.display = "block";
+			updateTotal(tables[mesa.textContent - 1]);
 		}
 	}
 
@@ -69,7 +112,11 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	function criarPedido(mesa) {
-		console.log(`Criar Pedido ${mesa.textContent}`);
+		tables[mesa.textContent - 1].addProduct(
+			new Product("Produto teste", ProductType.P, 555.0)
+		);
+		updateTotal(tables[mesa.textContent - 1]);
+		showCurrentProductsOfTable(tables[mesa.textContent - 1]);
 	}
 
 	btnEditar.addEventListener("click", (e) => {
@@ -101,39 +148,92 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	//! ---------------------------------------------------------------------------
 
+	function createElement(tag, id = "") {
+		let elem = document.createElement(tag);
+		id ? (elem.id = id) : (elem.id = "");
+		return elem;
+	}
+
+	function createText(elem, text) {
+		let texto = document.createTextNode(text);
+		elem.appendChild(texto);
+	}
+
+	function appendElements(elem, childs) {
+		elem.replaceChildren();
+		let arr = Array.from(childs);
+		arr.forEach((c) => elem.appendChild(c));
+	}
+
+	function checkProductAmount(mesa, product) {
+		let total = 0;
+		mesa.products.forEach((p) => (p === product ? total++ : (total += 0)));
+		return total;
+	}
+
+	function makeRow(product) {
+		let tr = createElement("tr");
+
+		let thProduto = createElement("th");
+		let thQuantidade = createElement("th");
+		let thPreco = createElement("th");
+		createText(thProduto, product.description);
+		createText(thQuantidade, "1");
+		createText(thPreco, product.price);
+		appendElements(tr, [thProduto, thQuantidade, thPreco]);
+
+		return tr;
+	}
+
+	function showCurrentProductsOfTable(mesa) {
+		let table = document.getElementById("form-product-table");
+		let thead = createElement("thead", "form-product-table-header");
+		let tbody = createElement("tbody", "form-product-table-body");
+
+		let thProduto = createElement("th");
+		createText(thProduto, "Produto");
+		let thQuantidade = createElement("th");
+		createText(thQuantidade, "Quantidade");
+		let thPreco = createElement("th");
+		createText(thPreco, "Preço");
+
+		appendElements(thead, [thProduto, thQuantidade, thPreco]);
+
+		let rows = [];
+		mesa.products.forEach((p) => rows.push(makeRow(p)));
+		appendElements(tbody, rows);
+		appendElements(table, [thead, tbody]);
+	}
+
+	//! ---------------------------------------------------------------------------
+
 	function exibirProdutosLayout() {
 		formPedido.style.display = "none";
 		console.log("Exibindo Produtos Layout");
-		console.log("Mesas Container:", mesasContainer.style.display);
-		console.log("Produtos Container:", produtosContainer.style.display);
+		console.log("Mesas Container:", tablesContainer.style.display);
+		console.log("Produtos Container:", productsContainer.style.display);
 
-		mesasContainer.style.display = "none";
-		produtosContainer.style.display = "block";
+		tablesContainer.style.display = "none";
+		productsContainer.style.display = "block";
 
-		// Call the function to display products
 		exibirProdutos();
 	}
 
 	function exibirProdutos() {
-		// Your existing logic to display products
 		console.log("A exibir Produtos");
 		const menu = new Menu();
 		menu.addProducts(
 			new Product("Produto 1", ProductType.E, 10.0),
 			new Product("Produto 2", ProductType.B, 15.0)
-			// Add more products as needed
 		);
 
 		const table = document.getElementById("products-table");
 		const tbody = table.querySelector("tbody");
 
-		// Add the table header
 		table.querySelector("thead").appendChild(Product.thead);
 
-		// Clear existing rows in the table body
 		tbody.appendChild(document.createTextNode(""));
 
-		// Add rows for each product in the menu
 		menu.products.forEach((product) => {
 			const tr = document.createElement("tr");
 			for (let property in product) {
@@ -218,16 +318,17 @@ document.addEventListener("DOMContentLoaded", function () {
 	 */
 	Product.thead = (function () {
 		let defaultProduct = new Product();
-		let html = "<tr>";
-
+		let tr = document.createElement("tr");
 		for (let property in defaultProduct) {
 			if (defaultProduct.hasOwnProperty(property) && property !== "toTrTd") {
-				html += `<th>${Product.propertyLabels[property]}</th>`;
+				let th = document.createElement("th");
+				th.appendChild(
+					document.createTextNode(Product.propertyLabels[property])
+				);
+				tr.appendChild(th);
 			}
 		}
-
-		html += "</tr>";
-		return html;
+		return tr;
 	})();
 	//! fim class product
 	/**
@@ -381,7 +482,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 				// Validate the price
 				if (isNaN(price) || price <= 0) {
-					alert("Preço inválido. Insira um valor numérico positivo.");
+					alert(" inválido. Insira um valor numérico positivo.");
 					return;
 				}
 

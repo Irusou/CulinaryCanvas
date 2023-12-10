@@ -10,7 +10,6 @@
 	<body>
 		<header class="header">
 			<h1 class="page-title">CulinaryCanvas</h1>
-			<!-- <img class="page-logo" src="./images/" alt="page-logo" onclick="irParaHomePage()" style="cursor: pointer;" /> -->
 			<nav class="navbar">
 				<ul class="list">
 					<li class="item">
@@ -38,8 +37,15 @@
 				</table>
 			</div>
 			<div id="order-form-container" style="display: none">
-				<h2>Gestão dos Pedidos</h2>
+				<table id="form-product-table">
+					<tr>
+						<th>Produto</th>
+						<th>Quantidade</th>
+						<th>Preço</th>
+					</tr>
+				</table>
 				<form id="order-form">
+					<p class="label-total" id="label-total"></p>
 					<button id="btnCriar" type="button">Criar</button>
 					<button id="btnEditar" type="button">Editar</button>
 					<button id="btnApagar" type="button">Apagar</button>
@@ -47,6 +53,5 @@
 				</form>
 			</div>
 		</main>
-		<!-- <footer>i'm a footer</footer> -->
 	</body>
 </html>
