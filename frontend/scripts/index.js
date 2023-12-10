@@ -62,7 +62,9 @@ document.addEventListener("DOMContentLoaded", function () {
 		let p = document.getElementById("label-total");
 		let total = calculateTotal(mesa.products);
 		p.replaceChildren();
-		p.appendChild(document.createTextNode(`Total: ${total}`));
+		if (total > 0) {
+			p.appendChild(document.createTextNode(`Total ${total} €`));
+		}
 	}
 
 	function exibirMesasLayout() {
@@ -103,6 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			mesa.classList.add("selecionada");
 			formPedido.style.display = "block";
 			updateTotal(tables[mesa.textContent - 1]);
+			//showCurrentProductsOfTable(tables[mesa.textContent - 1]);
 		}
 	}
 
@@ -165,21 +168,31 @@ document.addEventListener("DOMContentLoaded", function () {
 		arr.forEach((c) => elem.appendChild(c));
 	}
 
-	function checkProductAmount(mesa, product) {
-		let total = 0;
-		mesa.products.forEach((p) => (p === product ? total++ : (total += 0)));
+	function checkProductAmount(products) {
+		let total = {};
+
+		products.forEach((p) => {
+			if (!total.hasOwnProperty(p)) {
+				total[p] = {
+					product: p.description,
+					amount: 1,
+				};
+			} else {
+				total[p].amount++;
+			}
+		});
 		return total;
 	}
 
-	function makeRow(product) {
+	function makeRow(product, quantity) {
 		let tr = createElement("tr");
 
 		let thProduto = createElement("th");
 		let thQuantidade = createElement("th");
 		let thPreco = createElement("th");
 		createText(thProduto, product.description);
-		createText(thQuantidade, "1");
-		createText(thPreco, product.price);
+		createText(thQuantidade, quantity);
+		createText(thPreco, `${product.price} €`);
 		appendElements(tr, [thProduto, thQuantidade, thPreco]);
 
 		return tr;
@@ -200,7 +213,11 @@ document.addEventListener("DOMContentLoaded", function () {
 		appendElements(thead, [thProduto, thQuantidade, thPreco]);
 
 		let rows = [];
-		mesa.products.forEach((p) => rows.push(makeRow(p)));
+
+		let { amount } = checkProductAmount(mesa.products);
+		mesa.products.forEach((p) => {
+			rows.push(makeRow(p, amount || 1));
+		});
 		appendElements(tbody, rows);
 		appendElements(table, [thead, tbody]);
 	}
@@ -568,5 +585,3 @@ document.addEventListener("DOMContentLoaded", function () {
 		new Product("Água", "B", 1.2)
 	);
 });
-
-//window.onload = init;
