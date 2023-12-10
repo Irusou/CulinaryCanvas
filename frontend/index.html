@@ -36,20 +36,46 @@
 					<tbody></tbody>
 				</table>
 			</div>
-			<div id="order-form-container" style="display: none">
-				<table id="form-product-table">
-					<tr>
-						<th>Produto</th>
-						<th>Quantidade</th>
-						<th>Preço</th>
-					</tr>
-				</table>
+			<div
+				id="order-form-container"
+				class="order-form-container"
+				style="display: none"
+			>
 				<form id="order-form">
-					<p class="label-total" id="label-total"></p>
-					<button id="btnCriar" type="button">Criar</button>
-					<button id="btnEditar" type="button">Editar</button>
-					<button id="btnApagar" type="button">Apagar</button>
-					<button id="btnFechar" type="button">Fechar</button>
+					<table id="form-product-table">
+						<tr>
+							<th>Produto</th>
+							<th>Quantidade</th>
+							<th>Preço</th>
+						</tr>
+					</table>
+					<div class="total">
+						<p class="label-total" id="label-total"></p>
+					</div>
+					<div class="dashboard">
+						<button id="btnCriar" type="button">Criar</button>
+						<button id="btnEditar" type="button">Editar</button>
+						<button id="btnApagar" type="button">Apagar</button>
+						<button id="btnFechar" type="button">Fechar</button>
+					</div>
+				</form>
+			</div>
+			<div
+				id="product-form-container"
+				class="product-form-container"
+				style="display: none"
+			>
+				<form id="product-form">
+					<label for="select-product">Produto</label>
+					<select name="select-product" id="select-product">
+						<option value="">Escolher produto</option>
+					</select>
+					<label for="ipt-quantidade">Quantidade</label>
+					<input type="number" min="1" />
+					<div class="dashboard">
+						<button id="btnAdd" type="button">Adicionar</button>
+						<button id="btnCancel" type="button">Cancelar</button>
+					</div>
 				</form>
 			</div>
 		</main>
