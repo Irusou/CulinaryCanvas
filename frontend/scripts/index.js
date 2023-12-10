@@ -7,11 +7,33 @@ class Table {
 	}
 
 	addProduct(product) {
-		this.products.push(product);
+		let existingProductIndex = this.products.findIndex(
+			(p) => p.descricao === product.descricao
+		);
+
+		if (existingProductIndex === -1) {
+			this.products.push(product);
+		} else {
+			this.products[existingProductIndex].quantidade += parseInt(
+				product.quantidade
+			);
+		}
 	}
 
 	removeProduct(product) {
-		this.products.filter((p) => p !== product);
+		let existingProductIndex = this.products.findIndex(
+			(p) => p.descricao === product.descricao
+		);
+
+		if (existingProductIndex === -1) {
+			return;
+		} else {
+			if (this.products[existingProductIndex].quantidade > 0) {
+				this.products[existingProductIndex].quantidade--;
+			} else {
+				this.products[existingProductIndex].remove(product);
+			}
+		}
 	}
 }
 
@@ -30,6 +52,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	let btnEditar = document.getElementById("btnEditar");
 	let btnApagar = document.getElementById("btnApagar");
 	let btnFechar = document.getElementById("btnFechar");
+
+	let selectedRow;
 
 	let productSelect = document.querySelector("#select-product");
 
@@ -128,10 +152,10 @@ document.addEventListener("DOMContentLoaded", function () {
 				let price = opt.dataset.price;
 				let obj = {
 					descricao: description,
-					preco: price,
-					quantidade: quantity,
+					preco: parseInt(price),
+					quantidade: parseInt(quantity),
 				};
-				console.log(obj);
+
 				criarPedido(currentTable, obj);
 			}
 		});
@@ -158,11 +182,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	btnApagar.addEventListener("click", (e) => {
 		let currentTable = document.getElementsByClassName("mesa selecionada")[0];
-		apagarPedido(currentTable);
+		apagarPedido(currentTable, selectedRow);
 	});
 
-	function apagarPedido() {
-		console.log("Apagar Pedido");
+	function apagarPedido(mesa, row) {
+		tables[mesa.textContent - 1].removeProduct();
 	}
 
 	btnFechar.addEventListener("click", (e) => {
@@ -179,7 +203,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	function createElement(tag, id = "") {
 		let elem = document.createElement(tag);
-		id ? (elem.id = id) : (elem.id = "");
+		if (id) {
+			elem.id = id;
+		}
+
 		return elem;
 	}
 
@@ -195,7 +222,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	function makeRow(product) {
-		let tr = createElement("tr");
+		let tr = createElement("tr", "product-row");
 		let thProduto = createElement("th");
 		let thQuantidade = createElement("th");
 		let thPreco = createElement("th");
@@ -204,6 +231,11 @@ document.addEventListener("DOMContentLoaded", function () {
 		createText(thQuantidade, product.quantidade);
 		createText(thPreco, product.preco);
 		appendElements(tr, [thProduto, thQuantidade, thPreco]);
+
+		tr.addEventListener("dblclick", (e) => {
+			selectedRow = tr;
+			console.log(selectedRow);
+		});
 
 		return tr;
 	}
@@ -223,8 +255,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		appendElements(thead, [thProduto, thQuantidade, thPreco]);
 
 		let rows = [];
-
-		let quantidade = document.getElementById("ipt-quantidade").value;
 		mesa.products.forEach((p) => {
 			rows.push(makeRow(p, p.quantidade || 1));
 		});
@@ -435,7 +465,6 @@ document.addEventListener("DOMContentLoaded", function () {
 				opt.dataset.type = product.productType;
 				opt.dataset.price = product.price;
 				opt.value = product.description;
-				console.log(product, opt);
 				createText(opt, product.description);
 				options.push(opt);
 			}, this); //Indicar que a ementa atual será o this dentro de cada chamada à função anterior
