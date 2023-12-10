@@ -22,7 +22,7 @@ class Table {
 
 	removeProduct(product) {
 		let existingProductIndex = this.products.findIndex(
-			(p) => p.descricao === product.descricao
+			(p) => p.descricao === product
 		);
 
 		if (existingProductIndex === -1) {
@@ -31,7 +31,7 @@ class Table {
 			if (this.products[existingProductIndex].quantidade > 0) {
 				this.products[existingProductIndex].quantidade--;
 			} else {
-				this.products[existingProductIndex].remove(product);
+				this.products[existingProductIndex].slice(existingProductIndex, 1);
 			}
 		}
 	}
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		let total = calculateTotal(mesa.products);
 		p.replaceChildren();
 		if (total > 0) {
-			p.appendChild(document.createTextNode(`Total ${total} €`));
+			p.appendChild(document.createTextNode(`Total ${total.toFixed(2)} €`));
 		}
 	}
 
@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				let price = opt.dataset.price;
 				let obj = {
 					descricao: description,
-					preco: parseInt(price),
+					preco: parseFloat(price),
 					quantidade: parseInt(quantity),
 				};
 
@@ -186,7 +186,11 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	function apagarPedido(mesa, row) {
-		tables[mesa.textContent - 1].removeProduct();
+		let produto = row.children[0].textContent;
+		tables[mesa.textContent - 1].removeProduct(produto);
+
+		updateTotal(tables[mesa.textContent - 1]);
+		showCurrentProductsOfTable(tables[mesa.textContent - 1]);
 	}
 
 	btnFechar.addEventListener("click", (e) => {
@@ -234,7 +238,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		tr.addEventListener("dblclick", (e) => {
 			selectedRow = tr;
-			console.log(selectedRow);
+			let rows = document.querySelectorAll("#product-row");
+			rows.forEach((r) => {
+				r.classList.remove("selected");
+			});
+			selectedRow.classList.add("selected");
 		});
 
 		return tr;
@@ -256,7 +264,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		let rows = [];
 		mesa.products.forEach((p) => {
-			rows.push(makeRow(p, p.quantidade || 1));
+			if (p.quantidade > 0) {
+				rows.push(makeRow(p, p.quantidade || 1));
+			}
 		});
 		appendElements(tbody, rows);
 		appendElements(table, [thead, tbody]);

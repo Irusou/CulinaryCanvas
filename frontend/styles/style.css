@@ -10,6 +10,7 @@
 
 	--tb-odd: #d2ebff;
 	--tb-even: #9cd7ff;
+	--tb-selected: #12405f;
 
 	--mesa-aberta: var(--bg-sixth);
 	--mesa-fechada: var(--border-primary);
@@ -26,6 +27,7 @@
 	--font-color-primary: white;
 	--font-color-secondary: black;
 	--font-color-total: #96d6f3;
+	--font-color-selected: #fff64c;
 
 	--qs-light: 300;
 	--qs-regular: 400;
@@ -159,6 +161,14 @@ button {
 
 #form-product-table th {
 	font-size: calc(var(--font-medium) / 1.25);
+}
+
+#form-product-table-body .selected {
+	background-color: var(--tb-selected) !important;
+}
+
+#form-product-table-body .selected th {
+	color: var(--font-color-selected);
 }
 
 form * {
