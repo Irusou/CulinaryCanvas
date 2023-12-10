@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	let btnApagar = document.getElementById("btnApagar");
 	let btnFechar = document.getElementById("btnFechar");
 
-	let productSelect = document.getElementById("select-product");
+	let productSelect = document.querySelector("#select-product");
 
 	const totalMesas = 10;
 	let tables = [];
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	 */
 	function calculateTotal(productList) {
 		return productList.reduce((init, curr) => {
-			return (init += curr.price);
+			return (init += curr.quantidade * curr.preco);
 		}, 0.0);
 	}
 
@@ -108,22 +108,41 @@ document.addEventListener("DOMContentLoaded", function () {
 		} else {
 			mesa.classList.add("selecionada");
 			formPedido.style.display = "block";
-			//productForm.style.display = "block";
 			updateTotal(tables[mesa.textContent - 1]);
-			//showCurrentProductsOfTable(tables[mesa.textContent - 1]);
 		}
 	}
 
 	btnCriar.addEventListener("click", (e) => {
 		let currentTable = document.getElementsByClassName("mesa selecionada")[0];
 		productForm.style.display = "block";
-		criarPedido(currentTable);
+
+		let btAdd = document.getElementById("btnAdd");
+		let btCancel = document.getElementById("btnCancel");
+
+		btAdd.addEventListener("click", (e) => {
+			let opt = productSelect.options[productSelect.selectedIndex];
+			let quantity = document.getElementById("ipt-quantidade").value;
+
+			if (opt && quantity) {
+				let description = opt.dataset.description;
+				let price = opt.dataset.price;
+				let obj = {
+					descricao: description,
+					preco: price,
+					quantidade: quantity,
+				};
+				console.log(obj);
+				criarPedido(currentTable, obj);
+			}
+		});
+
+		btCancel.addEventListener("click", (e) => {
+			productForm.style.display = "none";
+		});
 	});
 
-	function criarPedido(mesa) {
-		tables[mesa.textContent - 1].addProduct(
-			new Product("Produto teste", ProductType.P, 555.0)
-		);
+	function criarPedido(mesa, produto) {
+		tables[mesa.textContent - 1].addProduct(produto);
 		updateTotal(tables[mesa.textContent - 1]);
 		showCurrentProductsOfTable(tables[mesa.textContent - 1]);
 	}
@@ -175,31 +194,15 @@ document.addEventListener("DOMContentLoaded", function () {
 		arr.forEach((c) => elem.appendChild(c));
 	}
 
-	function checkProductAmount(products) {
-		let total = {};
-
-		products.forEach((p) => {
-			if (!total.hasOwnProperty(p)) {
-				total[p] = {
-					product: p.description,
-					amount: 1,
-				};
-			} else {
-				total[p].amount++;
-			}
-		});
-		return total;
-	}
-
-	function makeRow(product, quantity) {
+	function makeRow(product) {
 		let tr = createElement("tr");
-
 		let thProduto = createElement("th");
 		let thQuantidade = createElement("th");
 		let thPreco = createElement("th");
-		createText(thProduto, product.description);
-		createText(thQuantidade, quantity);
-		createText(thPreco, `${product.price} €`);
+
+		createText(thProduto, product.descricao);
+		createText(thQuantidade, product.quantidade);
+		createText(thPreco, product.preco);
 		appendElements(tr, [thProduto, thQuantidade, thPreco]);
 
 		return tr;
@@ -221,9 +224,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		let rows = [];
 
-		let { amount } = checkProductAmount(mesa.products);
+		let quantidade = document.getElementById("ipt-quantidade").value;
 		mesa.products.forEach((p) => {
-			rows.push(makeRow(p, amount || 1));
+			rows.push(makeRow(p, p.quantidade || 1));
 		});
 		appendElements(tbody, rows);
 		appendElements(table, [thead, tbody]);
@@ -410,23 +413,35 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (this.products.length === 0) {
 				return "";
 			} else {
-				//let resultado = `<table><thead>${Product.thead}</thead>`;
 				appendElements(thead, [Product.thead]);
 				this.products.forEach((product) => {
 					appendElements(tbody, [product.toTrTd()]);
-					//resultado += product.toTrTd();
 				});
-				//resultado += "</table>";
-				//return resultado;
 				appendElements(table, [thead, tbody]);
 			}
 			return table;
 		}
 
 		addProducts(...products) {
+			let opt = createElement("option");
+			opt.value = "";
+			let options = [];
+			options.push(opt);
+			createText(opt, "Escolha um produto");
 			products.forEach(function (product) {
 				this.add(product);
+				opt = createElement("option", product.description);
+				opt.dataset.description = product.description;
+				opt.dataset.type = product.productType;
+				opt.dataset.price = product.price;
+				opt.value = product.description;
+				console.log(product, opt);
+				createText(opt, product.description);
+				options.push(opt);
 			}, this); //Indicar que a ementa atual será o this dentro de cada chamada à função anterior
+
+			appendElements(productSelect, options);
+
 			return this;
 		}
 	}
@@ -457,7 +472,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		);
 
 		if (this.products.length !== initialLength) {
-			// If products were removed, update the display
 			this.show();
 		} else {
 			alert(`Nenhum produto encontrado com essa descrição '${description}'.`);
