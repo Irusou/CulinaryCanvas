@@ -96,6 +96,9 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	}
 
+	/**
+	 * mostra as mesas
+	 */
 	function exibirMesasLayout() {
 		tablesContainer.style.display = "block";
 		productsContainer.style.display = "none";
@@ -121,6 +124,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	}
 
+	/**
+	 * permite selecionar uma mesa
+	 * @param {*} mesa
+	 */
 	function selecionarMesa(mesa) {
 		const mesas = document.querySelectorAll(".mesa");
 
@@ -165,6 +172,11 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	});
 
+	/**
+	 * cria um pedido para uma mesa
+	 * @param {*} mesa
+	 * @param {*} produto
+	 */
 	function criarPedido(mesa, produto) {
 		tables[mesa.textContent - 1].addProduct(produto);
 		updateTotal(tables[mesa.textContent - 1]);
@@ -177,6 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	function editarPedido() {
+		/* TODO */
 		console.log("Editar Pedido");
 	}
 
@@ -185,6 +198,11 @@ document.addEventListener("DOMContentLoaded", function () {
 		apagarPedido(currentTable, selectedRow);
 	});
 
+	/**
+	 * apaga um pedido de uma mesa
+	 * @param {*} mesa
+	 * @param {*} row
+	 */
 	function apagarPedido(mesa, row) {
 		let produto = row.children[0].textContent;
 		tables[mesa.textContent - 1].removeProduct(produto);
@@ -198,6 +216,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		fecharPedidos(currentTable);
 	});
 
+	/**
+	 * fecha os pedidos de uma mesa
+	 * @param {*} mesa
+	 */
 	function fecharPedidos(mesa) {
 		mesa.classList.add("fechada");
 		mesa.addEventListener("dblclick", (e) => {
@@ -210,6 +232,12 @@ document.addEventListener("DOMContentLoaded", function () {
 		productForm.style.display = "none";
 	}
 
+	/**
+	 * funcao auxiliar para criar um elemento html
+	 * @param {*} tag
+	 * @param {*} id
+	 * @returns elemento com tag e id
+	 */
 	function createElement(tag, id = "") {
 		let elem = document.createElement(tag);
 		if (id) {
@@ -219,17 +247,33 @@ document.addEventListener("DOMContentLoaded", function () {
 		return elem;
 	}
 
+	/**
+	 * funcao auxiliar para adicionar texto a um elemento html
+	 * @param {*} elem
+	 * @param {*} text
+	 */
 	function createText(elem, text) {
 		let texto = document.createTextNode(text);
 		elem.appendChild(texto);
 	}
 
+	/**
+	 * funcao auxiliar
+	 * atribui os elementos filhos ao elemento pai
+	 * @param {*} elem
+	 * @param {*} childs
+	 */
 	function appendElements(elem, childs) {
 		elem.replaceChildren();
 		let arr = Array.from(childs);
 		arr.forEach((c) => elem.appendChild(c));
 	}
 
+	/**
+	 * cria uma linha na tabela com o produto
+	 * @param {*} product
+	 * @returns elemento html 'tr'
+	 */
 	function makeRow(product) {
 		let tr = createElement("tr", "product-row");
 		let thProduto = createElement("th");
@@ -253,6 +297,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		return tr;
 	}
 
+	/**
+	 * mostra os produtos de uma mesa
+	 * @param {*} mesa
+	 */
 	function showCurrentProductsOfTable(mesa) {
 		let table = document.getElementById("form-product-table");
 		let thead = createElement("thead", "form-product-table-header");
@@ -277,8 +325,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		appendElements(table, [thead, tbody]);
 	}
 
-	//! ---------------------------------------------------------------------------
-
+	/**
+	 * mostra o layout dos produtos
+	 * @param {*} menu
+	 */
 	function exibirProdutosLayout(menu) {
 		let form = document.getElementById("add-product-form");
 		form.addEventListener("submit", (e) => e.preventDefault());
@@ -316,6 +366,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	}
 
+	/**
+	 * mostra os produtos de uma mesa
+	 * @param {*} menu
+	 */
 	function exibirProdutos(menu) {
 		let tbody = document.getElementById("form-product-table-body");
 		tbody.replaceChildren();
