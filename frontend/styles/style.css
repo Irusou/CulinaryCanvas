@@ -111,15 +111,77 @@ body {
 main {
 	margin: 1.5rem;
 	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .mesas-container {
 	display: flex;
 	align-content: center;
+	align-items: center;
 	justify-content: space-evenly;
 	flex-wrap: wrap;
-	align-items: center;
 	flex-direction: row;
+}
+
+.produtos-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+}
+
+#produtos-container tr:last-child td:nth-child(1) {
+	border-radius: 0 0 0 5px;
+}
+#produtos-container tr:last-child td:nth-child(3) {
+	border-radius: 0 0 5px 0;
+}
+
+#form-product-table-header tr th {
+	padding: 5px;
+}
+
+#add-product-form {
+	padding: 20px;
+	border-radius: 15px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	background-color: rgba(100, 100, 111, 0.2);
+	/* box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; */
+}
+
+#add-product-form #inputs {
+	display: grid;
+	grid-template-columns: repeat(2, auto);
+	grid-template-rows: repeat(4, auto);
+	grid-column-gap: 10px;
+	grid-row-gap: 10px;
+}
+
+#inputs input {
+	background-color: var(--bg-ternary);
+	color: var(--font-color-primary);
+	padding-left: 5px;
+	border: 2px solid var(--bg-primary);
+	border-radius: 5px;
+}
+
+#inputs select {
+	border-radius: 5px;
+	color: var(--font-color-primary);
+	background: var(--bg-ternary);
+	border: 2px solid var(--bg-primary);
+}
+
+#product-row td {
+	color: var(--font-color-secondary);
+	text-align: center;
+	padding: 5px;
 }
 
 .mesa {

@@ -52,6 +52,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	let btnEditar = document.getElementById("btnEditar");
 	let btnApagar = document.getElementById("btnApagar");
 	let btnFechar = document.getElementById("btnFechar");
+	let btCriar = document.getElementById("btCriar");
+	let btEditar = document.getElementById("btEditar");
+	let btApagar = document.getElementById("btApagar");
 
 	let selectedRow;
 
@@ -127,9 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		formPedido.style.display = "none";
 		productForm.style.display = "none";
 
-		if (mesa.classList.contains("fechada")) {
-			mesa.classList.add("aberta");
-		} else {
+		if (!mesa.classList.contains("fechada")) {
 			mesa.classList.add("selecionada");
 			formPedido.style.display = "block";
 			updateTotal(tables[mesa.textContent - 1]);
@@ -198,13 +199,17 @@ document.addEventListener("DOMContentLoaded", function () {
 		fecharPedidos(currentTable);
 	});
 
-	function fecharPedidos() {
+	function fecharPedidos(mesa) {
+		mesa.classList.add("fechada");
+		mesa.addEventListener("dblclick", (e) => {
+			mesa.classList.remove("fechada");
+
+			updateTotal(tables[mesa.textContent - 1]);
+			showCurrentProductsOfTable(tables[mesa.textContent - 1]);
+		});
 		formPedido.style.display = "none";
 		productForm.style.display = "none";
 	}
-
-	//! ---------------------------------------------------------------------------
-
 	function createElement(tag, id = "") {
 		let elem = document.createElement(tag);
 		if (id) {
@@ -275,39 +280,44 @@ document.addEventListener("DOMContentLoaded", function () {
 	//! ---------------------------------------------------------------------------
 
 	function exibirProdutosLayout() {
+		let menu = new Menu();
+		let form = document.getElementById("add-product-form");
+		form.addEventListener("submit", (e) => e.preventDefault());
 		formPedido.style.display = "none";
 		productForm.style.display = "none";
 
 		tablesContainer.style.display = "none";
-		productsContainer.style.display = "block";
+		productsContainer.style.display = "flex";
 
-		exibirProdutos();
+		exibirProdutos(menu);
+
+		btCriar.addEventListener("click", (e) => {
+			let desc = document.getElementById("ipt-desc").value;
+			let type = document.getElementById("ipt-type").value;
+			let price = document.getElementById("ipt-price").value;
+			menu.addProducts(new Product(desc, type, price));
+			exibirProdutos(menu);
+		});
 	}
 
-	function exibirProdutos() {
-		const menu = new Menu();
-		menu.addProducts(
-			new Product("Produto 1", ProductType.E, 10.0),
-			new Product("Produto 2", ProductType.B, 15.0)
-		);
-
-		const table = document.getElementById("products-table");
-		const tbody = table.querySelector("tbody");
-
-		table.querySelector("thead").appendChild(Product.thead);
-
+	function exibirProdutos(menu) {
+		let tbody = document.getElementById("form-product-table-body");
 		tbody.replaceChildren();
-		menu.products.forEach((product) => {
-			const tr = document.createElement("tr");
-			for (let property in product) {
-				if (product.hasOwnProperty(property) && property !== "toTrTd") {
-					const td = document.createElement("td");
-					td.textContent = product[property];
-					tr.appendChild(td);
-				}
-			}
-			tbody.appendChild(tr);
+		let trs = [];
+		menu.products.forEach((p) => {
+			console.log(p);
+			let tr = createElement("tr", "product-row");
+			let desc = createElement("th");
+			createText(desc, p.description);
+			let type = createElement("th");
+			createText(type, p.productType);
+			let price = createElement("th");
+			createText(price, p.price);
+			appendElements(tr, [desc, type, price]);
+			trs.push(tr);
 		});
+
+		appendElements(tbody, trs);
 	}
 
 	//? ------------------TIPOS DE PRODUTO--------------------------------

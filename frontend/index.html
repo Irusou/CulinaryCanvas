@@ -32,9 +32,38 @@
 				style="display: none"
 			>
 				<table id="products-table">
-					<thead></thead>
-					<tbody></tbody>
+					<thead id="form-product-table-header">
+						<tr>
+							<th>Descrição</th>
+							<th>Tipo</th>
+							<th>Preço</th>
+						</tr>
+					</thead>
+					<tbody id="form-product-table-body"></tbody>
 				</table>
+
+				<form id="add-product-form">
+					<div id="inputs" class="inputs">
+						<label for="ipt-desc">Descrição</label>
+						<input type="text" name="ipt-desc" id="ipt-desc" />
+
+						<label for="ipt-type">Tipo</label>
+						<select name="ipt-type" id="ipt-type">
+							<option value="E">Entrada</option>
+							<option value="B">Bebida</option>
+							<option value="P">Prato Principal</option>
+							<option value="S">Sobremesa</option>
+						</select>
+
+						<label for="ipt-price">Preço</label>
+						<input type="number" name="ipt-price" id="ipt-price" min="0.0" />
+					</div>
+					<div class="dashboard">
+						<button id="btCriar">Criar</button>
+						<button id="btEditar">Editar</button>
+						<button id="btApagar">Apagar</button>
+					</div>
+				</form>
 			</div>
 			<div
 				id="order-form-container"
