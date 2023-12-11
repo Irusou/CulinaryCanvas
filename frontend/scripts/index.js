@@ -294,10 +294,18 @@ document.addEventListener("DOMContentLoaded", function () {
 			let desc = document.getElementById("ipt-desc").value;
 			let type = document.getElementById("ipt-type").value;
 			let price = document.getElementById("ipt-price").value;
+			if (!desc || !type || !price) {
+				return;
+			}
 			let product = new Product(desc, type, price);
 			let exist = false;
 			menu.products.forEach((p) => {
-				if (p === product) exist = true;
+				if (
+					p.description === product.description &&
+					p.type === product.type &&
+					p.price === product.price
+				)
+					exist = true;
 			});
 
 			if (!exist) {
