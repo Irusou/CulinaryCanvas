@@ -53,9 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	let btnApagar = document.getElementById("btnApagar");
 	let btnFechar = document.getElementById("btnFechar");
 	let btCriar = document.getElementById("btCriar");
-	let btEditar = document.getElementById("btEditar");
-	let btApagar = document.getElementById("btApagar");
-
+	let menu;
 	let selectedRow;
 
 	let productSelect = document.querySelector("#select-product");
@@ -68,10 +66,11 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	produtosLink.addEventListener("click", function (e) {
-		exibirProdutosLayout();
+		if (!menu instanceof Menu || !menu) {
+			menu = new Menu();
+		}
+		exibirProdutosLayout(menu);
 	});
-
-	//! -----------------------------------------------------------------------------------
 
 	/**
 	 * calcula o preço total de produtos de uma mesa
@@ -210,6 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		formPedido.style.display = "none";
 		productForm.style.display = "none";
 	}
+
 	function createElement(tag, id = "") {
 		let elem = document.createElement(tag);
 		if (id) {
@@ -279,8 +279,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	//! ---------------------------------------------------------------------------
 
-	function exibirProdutosLayout() {
-		let menu = new Menu();
+	function exibirProdutosLayout(menu) {
 		let form = document.getElementById("add-product-form");
 		form.addEventListener("submit", (e) => e.preventDefault());
 		formPedido.style.display = "none";
@@ -295,7 +294,16 @@ document.addEventListener("DOMContentLoaded", function () {
 			let desc = document.getElementById("ipt-desc").value;
 			let type = document.getElementById("ipt-type").value;
 			let price = document.getElementById("ipt-price").value;
-			menu.addProducts(new Product(desc, type, price));
+			let product = new Product(desc, type, price);
+			let exist = false;
+			menu.products.forEach((p) => {
+				if (p === product) exist = true;
+			});
+
+			if (!exist) {
+				menu.products.push(product);
+			}
+
 			exibirProdutos(menu);
 		});
 	}
@@ -305,7 +313,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		tbody.replaceChildren();
 		let trs = [];
 		menu.products.forEach((p) => {
-			console.log(p);
 			let tr = createElement("tr", "product-row");
 			let desc = createElement("th");
 			createText(desc, p.description);
@@ -479,7 +486,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			options.push(opt);
 			createText(opt, "Escolha um produto");
 			products.forEach(function (product) {
-				this.add(product);
+				this.products.push(product);
 				opt = createElement("option", product.description);
 				opt.dataset.description = product.description;
 				opt.dataset.type = product.productType;
