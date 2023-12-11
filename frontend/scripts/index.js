@@ -46,6 +46,12 @@ document.addEventListener("DOMContentLoaded", function () {
 	const mesasLink = document.getElementById("mesas-link");
 	const productsContainer = document.getElementById("produtos-container");
 	const produtosLink = document.getElementById("produtos-link");
+	
+	const tipoprodutosLink = document.getElementById("tipos-link");
+	let btnTipoCriar = document.getElementById("btnTipoCriar");
+  let btnTipoEditar = document.getElementById("btnTipoEditar");
+  let btnTipoApagar = document.getElementById("btnTipoApagar");
+
 	let formPedido = document.getElementById("order-form-container");
 	let productForm = document.getElementById("product-form-container");
 	let btnCriar = document.getElementById("btnCriar");
@@ -66,6 +72,13 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	produtosLink.addEventListener("click", function (e) {
+		if (!menu instanceof Menu || !menu) {
+			menu = new Menu();
+		}
+		exibirProdutosLayout(menu);
+	});
+
+	tipoprodutosLink.addEventListener("click", function (e) {
 		if (!menu instanceof Menu || !menu) {
 			menu = new Menu();
 		}
@@ -397,6 +410,34 @@ document.addEventListener("DOMContentLoaded", function () {
 		S: "Sobremesa",
 	};
 	//! ------------------TIPOS DE PRODUTO--------------------------------
+	class ProductTypeManager {
+		constructor() {
+			this.productTypes = [];
+		}
+	
+		addProductType(productType) {
+			if (!this.productTypes.includes(productType)) {
+				this.productTypes.push(productType);
+			}
+		}
+	
+		editProductType(oldProductType, newProductType) {
+			const index = this.productTypes.indexOf(oldProductType);
+			if (index !== -1) {
+				this.productTypes[index] = newProductType;
+			}
+		}
+	
+		deleteProductType(productType) {
+			const index = this.productTypes.indexOf(productType);
+			if (index !== -1) {
+				this.productTypes.splice(index, 1);
+			}
+		}
+	}
+	const productTypeManager = new ProductTypeManager();
+	
+
 	//? ------------------CLASSE PRODUTO--------------------------------
 	class Product {
 		constructor(description = "", productType = "", price = 0.0) {
