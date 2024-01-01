@@ -1,11 +1,11 @@
-const tableModel = require("../models/tableModel");
+const tableModel = require("../models/table");
 
-module.exports = class TableController {
-	static async getAllTables(req, res) {
+class TableController {
+	static getAllTables = async (req, res) => {
 		const tables = await tableModel.getAllTables();
 
 		return res.status(200).json(tables);
-	}
+	};
 
 	static async getTable(req, res) {
 		const { id } = req.params;
@@ -21,4 +21,6 @@ module.exports = class TableController {
 	static async updateProduct(req, res) {}
 
 	static async deleteProduct(req, res) {}
-};
+}
+
+module.exports = TableController;
