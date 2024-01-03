@@ -25,7 +25,8 @@
 	},
 	"homepage": "https://github.com/Irusou/CulinaryCanvas#readme",
 	"dependencies": {
-		"express": "^4.18.2"
+		"express": "^4.18.2",
+		"pug": "^3.0.2"
 	},
 	"devDependencies": {
 		"dotenv": "^16.3.1",
