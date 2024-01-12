@@ -2,18 +2,21 @@ const express = require("express");
 const app = express();
 const tableRouter = require("./routes/tables");
 const productRoutes = require("./routes/products");
-//const typeRoutes = require("./routes/types");
+const typeRoutes = require("./routes/types");
+//const orderRoutes = require("./routes/orders");
 
 app.set("views", "./views");
 app.set("view engine", "pug");
 
 app.use(express.json({ extended: true }));
 
-app.use("/api/tables", tableRouter);
+app.use("/tables", tableRouter);
 
-app.use("/api/products", productRoutes);
+app.use("/products", productRoutes);
 
-//app.use("/api/types", typeRoutes);
+app.use("/product-types", typeRoutes);
+
+//app.use("/order-items", orderRoutes);
 
 app.get("/", (req, res) => {
 	res.render("index", { title: "Endpoints" });
