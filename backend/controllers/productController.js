@@ -1,7 +1,7 @@
 const productModel = require("../models/product");
 
 class ProductController {
-	static getProducts = async (req, res) => {
+	static getProducts = async (_req, res) => {
 		const products = await productModel.getProducts();
 
 		return res.status(200).json(products);
