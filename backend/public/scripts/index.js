@@ -46,11 +46,11 @@ document.addEventListener("DOMContentLoaded", function () {
 	const mesasLink = document.getElementById("mesas-link");
 	const productsContainer = document.getElementById("produtos-container");
 	const produtosLink = document.getElementById("produtos-link");
-	
+
 	const tipoprodutosLink = document.getElementById("tipos-link");
 	let btnTipoCriar = document.getElementById("btnTipoCriar");
-  let btnTipoEditar = document.getElementById("btnTipoEditar");
-  let btnTipoApagar = document.getElementById("btnTipoApagar");
+	let btnTipoEditar = document.getElementById("btnTipoEditar");
+	let btnTipoApagar = document.getElementById("btnTipoApagar");
 
 	let formPedido = document.getElementById("order-form-container");
 	let productForm = document.getElementById("product-form-container");
@@ -414,29 +414,47 @@ document.addEventListener("DOMContentLoaded", function () {
 		constructor() {
 			this.productTypes = [];
 		}
-	
-		addProductType(productType) {
+
+		async loadTypes() {
+			this.productTypes = await fetch("http://localhost:4040/product-types");
+		}
+
+		static addProductType(productType) {
+			this.loadTypes();
 			if (!this.productTypes.includes(productType)) {
 				this.productTypes.push(productType);
 			}
 		}
-	
-		editProductType(oldProductType, newProductType) {
+
+		static editProductType(oldProductType, newProductType) {
+			this.loadTypes();
 			const index = this.productTypes.indexOf(oldProductType);
 			if (index !== -1) {
 				this.productTypes[index] = newProductType;
 			}
 		}
-	
-		deleteProductType(productType) {
+
+		static deleteProductType(productType) {
+			this.loadTypes();
 			const index = this.productTypes.indexOf(productType);
 			if (index !== -1) {
 				this.productTypes.splice(index, 1);
 			}
 		}
+
+		static showTypes() {
+			this.loadTypes();
+			const table = document.createElement("table");
+			this.productTypes.forEach((type) => {
+				const tr = document.createElement("tr");
+				tr.textContent = type.description;
+				table.appendChild(tr);
+			});
+
+			return table;
+		}
 	}
 	const productTypeManager = new ProductTypeManager();
-	
 
 	//? ------------------CLASSE PRODUTO--------------------------------
 	class Product {
