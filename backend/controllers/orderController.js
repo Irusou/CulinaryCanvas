@@ -14,8 +14,8 @@ class OrderController {
 	};
 
 	static addToOrder = async (req, res) => {
-		const { table } = req.body;
-		const order = await orderModel.addToOrder(table);
+		const { table } = req.params;
+		const order = await orderModel.addToOrder(table, req.body);
 		return res.status(201).json(order);
 	};
 

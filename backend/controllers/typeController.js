@@ -20,7 +20,8 @@ class TypeController {
 	};
 
 	static updateType = async (req, res) => {
-		const type = await typeModel.updateType(req.body);
+		const id = req.params.id;
+		const type = await typeModel.updateType(id, req.body);
 		return res.status(201).json(type);
 	};
 

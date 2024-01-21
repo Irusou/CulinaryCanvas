@@ -13,21 +13,29 @@ module.exports = class Order {
 		return order;
 	}
 
-	static async addToOrder(table) {
-		const { id, product, quantity } = table;
+	static async addToOrder(id, table) {
+		const { product, quantity: quantidade } = table;
 		const [products] = await connection.execute(
 			"select produto from pedido where mesa = ?",
 			[id]
 		);
-
 		let query;
-		let [newProduct] = [];
-		if (products.indexOf(product) === -1) {
+		let newProduct;
+		if (products.some((p) => p.produto === product) === false) {
 			query = "insert into pedido(mesa, produto, quantity) values(?,?,?)";
-			[newProduct] = connection.execute(query, [id, product, quantity]);
+			[newProduct] = await connection.execute(query, [id, product, quantidade]);
 		} else {
-			query = "update pedido set quantity = ? where mesa = ?";
-			[newProduct] = connection.execute(query, [++quantity, id]);
+			let [oldQuantity] = await connection.execute(
+				"select quantity from pedido where mesa = ? and produto = ?",
+				[id, product]
+			);
+			let newQuantity = oldQuantity[0].quantity + quantidade;
+			query = "update pedido set quantity = ? where mesa = ? and produto = ?";
+			[newProduct] = await connection.execute(query, [
+				newQuantity,
+				id,
+				product,
+			]);
 		}
 		return newProduct;
 	}

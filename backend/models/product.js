@@ -4,6 +4,7 @@ const connection = require("./connection");
 module.exports = class Product {
 	static async getProducts() {
 		const query = `select 
+		p.id as 'ID', 
 		p.description as 'Produto',
 		round(p.price,2) as 'Preço',
 		t.description as 'Tipo' 
@@ -13,7 +14,8 @@ module.exports = class Product {
 	}
 
 	static async getProduct(id) {
-		const query = `select 
+		const query = `select
+		p.id as 'ID', 
 		p.description as 'Produto',
 		round(p.price,2) as 'Preço',
 		t.description as 'Tipo' 
@@ -35,10 +37,15 @@ module.exports = class Product {
 	}
 
 	static async updateProduct(product) {
-		const { id, nome, preco } = product;
+		const { id, description, price, tipo } = product;
 		const query =
 			"UPDATE produto SET description = ?, price = ?, tipo = ? WHERE id = ?";
-		const oldProduct = await connection.execute(query, [nome, preco, id]);
+		const oldProduct = await connection.execute(query, [
+			description,
+			price,
+			tipo,
+			id,
+		]);
 		return oldProduct;
 	}
 

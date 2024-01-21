@@ -21,8 +21,8 @@ module.exports = class Type {
 		return newType;
 	}
 
-	static async updateType(type) {
-		const { id, description } = type;
+	static async updateType(id, type) {
+		const { description } = type;
 		const query = "UPDATE tipo SET description = ? WHERE id = ?";
 		const oldType = await connection.execute(query, [description, id]);
 		return oldType;

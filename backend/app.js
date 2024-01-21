@@ -18,7 +18,7 @@ app.use("/product-types", typeRoutes);
 
 app.use("/order-items", orderRoutes);
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
 	res.render("index", { title: "Endpoints" });
 });
 
