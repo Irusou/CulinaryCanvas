@@ -3,7 +3,7 @@ const orderModel = require("../models/order");
 class OrderController {
 	static getOrder = async (req, res) => {
 		const { table } = req.params;
-		const order = await orderModel.getOrder(table);
+		const order = await orderModel.getOrder(Number(table));
 		return res.status(201).json(order);
 	};
 

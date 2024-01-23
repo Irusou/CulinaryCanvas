@@ -69,15 +69,24 @@ function init() {
 					tableElement.classList.add("fechada");
 				}
 
-				tableElement.addEventListener("click", (evt) => {
-					if (orderFormContainer.style.display === "none") {
-						orderFormContainer.style.display === "block";
-					} else {
-						orderFormContainer.style.display === "none";
+				tablesContainer.appendChild(tableElement);
+			});
+
+			const mesas = document.querySelectorAll(".mesa");
+			orderFormContainer.style.display = "none";
+			mesas.forEach((mesa) => {
+				mesa.classList.remove("selected");
+				mesa.addEventListener("click", (evt) => {
+					if (!mesa.classList.contains("selected")) {
+						mesa.classList.add("selected");
+						orderFormContainer.style.display = "block";
+						const tableNumber = document.getElementById("table-form-header");
+						tableNumber.textContent = `Mesa ${evt.target.textContent}`;
+						formProductTable.replaceChildren();
+						createOrderTable();
+						mesa.classList.remove("selected");
 					}
 				});
-
-				tablesContainer.appendChild(tableElement);
 			});
 		}
 
@@ -85,6 +94,7 @@ function init() {
 			productsContainer.replaceChildren();
 			const products = await this.fetchProducts();
 			const table = createProductsTable(products);
+			createProductsSelect(products);
 			productsContainer.appendChild(table);
 		}
 
@@ -101,9 +111,72 @@ function init() {
 	const productsContainer = document.querySelector(".products-container");
 	const typesContainer = document.querySelector(".types-container");
 	const orderFormContainer = document.querySelector(".order-form-container");
+	const productFormContainer = document.querySelector(
+		".product-form-container"
+	);
+	const formProductTable = document.getElementById("form-product-table");
+
 	const showTablesLayout = document.querySelector("#table-link");
 	const showProductsLayout = document.querySelector("#product-link");
 	const showTypesLayout = document.querySelector("#type-link");
+
+	// butões para controlar produtos de uma mesa
+	const btnCriar = document.querySelector("#btnCriar");
+	const btnEditar = document.querySelector("#btnEditar");
+	const btnApagar = document.querySelector("#btnApagar");
+	const btnFechar = document.querySelector("#btnFechar");
+
+	const btnAdd = document.querySelector("#btnAdd");
+	const btnCancel = document.querySelector("#btnCancel");
+
+	btnCriar.addEventListener("click", (e) => {
+		util.loadProducts();
+		productFormContainer.style.display = "block";
+	});
+
+	btnFechar.addEventListener("click", (e) => {
+		closeTable();
+	});
+
+	btnAdd.addEventListener("click", (e) => {
+		e.preventDefault();
+		const product = document.getElementById("select-form").value;
+		const table = document.getElementById("table-form-header");
+		const quantity = document.getElementById("ipt-quantidade").value;
+		const number = table.textContent.split(" ")[1];
+		const order = {
+			product,
+			quantity,
+		};
+		addToOrder(number, order);
+		formProductTable.replaceChildren();
+		createOrderTable();
+	});
+
+	btnCancel.addEventListener("click", (e) => {
+		document.getElementById("select-form").value = 0;
+		document.getElementById("select-form").textContent = "";
+		document.getElementById("ipt-quantidade").value = "";
+		productFormContainer.style.display = "none";
+	});
+
+	async function addToOrder(table, order) {
+		const { product, quantity } = order;
+		await fetch(`http://localhost:4040/order-items/${table}`, {
+			method: "POST",
+			headers: { "Content-type": "application/json" },
+			body: JSON.stringify({ product, quantity }),
+		});
+	}
+
+	async function closeTable() {
+		const table = document.getElementById("table-form-header");
+		const number = table.textContent.split(" ")[1];
+		await fetch(`http://localhost:4040/tables/${number}`, {
+			method: "PUT",
+		});
+		util.loadTables();
+	}
 
 	showTablesLayout.addEventListener("click", () => {
 		productsContainer.style.display = "none";
@@ -169,6 +242,89 @@ function init() {
 		});
 
 		return table;
+	};
+
+	const createOrderTable = async () => {
+		const number = document
+			.getElementById("table-form-header")
+			.textContent.split(" ")[1];
+		const res = await fetch(`http://localhost:4040/order-items/${number}`);
+		const orders = await res.json();
+		const o = {};
+
+		orders.forEach((order) => {
+			const { Produto, Quantidade, Preco } = order;
+			o[Produto] = {
+				Quantidade: (o[Produto]?.Quantidade || 0) + Quantidade,
+				Preco,
+			};
+		});
+
+		const result = Object.keys(o).map((Produto) => ({
+			Produto,
+			...o[Produto],
+		}));
+
+		//? populate the table
+		const header = document.createElement("tr");
+		const thProduct = document.createElement("th");
+		thProduct.textContent = "Produto";
+		const thQuantity = document.createElement("th");
+		thQuantity.textContent = "Quantidade";
+		const thPrice = document.createElement("th");
+		thPrice.textContent = "Preço";
+
+		header.appendChild(thProduct);
+		header.appendChild(thQuantity);
+		header.appendChild(thPrice);
+
+		header.classList.add("form-product-table-header");
+
+		formProductTable.appendChild(header);
+
+		result.forEach((row) => {
+			const tr = document.createElement("tr");
+			const product = document.createElement("th");
+			product.textContent = row.Produto;
+			const quantity = document.createElement("th");
+			quantity.textContent = row.Quantidade;
+			const price = document.createElement("th");
+			price.textContent = row.Preco.toFixed(1);
+
+			tr.appendChild(product);
+			tr.appendChild(quantity);
+			tr.appendChild(price);
+			formProductTable.appendChild(tr);
+		});
+
+		//? populate the label
+		const total = calculateTotal(result);
+		document.getElementById("label-total").textContent = `${total.toFixed(2)}€`;
+	};
+
+	const calculateTotal = (products) => {
+		let total = 0;
+		products.forEach(
+			(product) => (total += product.Quantidade * product.Preco)
+		);
+		return total;
+	};
+
+	const createProductsSelect = (products) => {
+		const select = document.getElementById("select-form");
+		select.replaceChildren();
+		const headerOption = document.createElement("option");
+		headerOption.textContent = "";
+		headerOption.value = 0;
+		select.appendChild(headerOption);
+
+		products.forEach((product) => {
+			const option = document.createElement("option");
+			option.value = product.ID;
+			option.textContent = product.Produto;
+			select.appendChild(option);
+		});
+		return select;
 	};
 
 	const createTypesTable = (types) => {

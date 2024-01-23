@@ -82,7 +82,7 @@ body {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	justify-content: start;
+	justify-content: space-evenly;
 	list-style: none;
 }
 
@@ -116,10 +116,11 @@ main {
 }
 
 .tables-container {
+	width: 100%;
 	display: flex;
 	align-content: center;
 	align-items: center;
-	justify-content: space-evenly;
+
 	flex-wrap: wrap;
 	flex-direction: row;
 }
@@ -152,7 +153,6 @@ main {
 	justify-content: center;
 	gap: 10px;
 	background-color: rgba(100, 100, 111, 0.2);
-	/* box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; */
 }
 
 #add-product-form #inputs {
@@ -219,6 +219,41 @@ button {
 	font-size: calc(var(--font-medium) / 1.25);
 	border-radius: 8px;
 	cursor: pointer;
+}
+
+#form-product-table .form-product-table-header {
+	background-color: var(--border-primary);
+}
+
+#form-product-table tr:not(.form-product-table-header):nth-child(even) {
+	background-color: var(--tb-even);
+	color: black;
+}
+#form-product-table tr:not(.form-product-table-header):nth-child(odd) {
+	background-color: var(--tb-odd);
+	color: black;
+}
+
+#form-product-table
+	tr:not(.form-product-table-header):last-child
+	th:nth-child(1) {
+	border-radius: 0 0 0 8px;
+}
+#form-product-table
+	tr:not(.form-product-table-header):last-child
+	th:nth-child(3) {
+	border-radius: 0 0 8px 0;
+}
+
+#form-product-table .form-product-table-header th {
+	padding: 8px;
+}
+
+#form-product-table .form-product-table-header th:nth-child(1) {
+	border-radius: 8px 0 0 0;
+}
+#form-product-table .form-product-table-header th:nth-child(3) {
+	border-radius: 0 8px 0 0;
 }
 
 #form-product-table th {

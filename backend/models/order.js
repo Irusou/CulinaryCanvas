@@ -4,10 +4,10 @@ const connection = require("./connection");
 module.exports = class Order {
 	static async getOrder(id) {
 		const query = `
-	    select pm.mesa as 'Mesa', p.description as 'Produto', quantity as 'Quantidade'
-	    from produto p inner join pedido pm on p.id = pm.produto
-	      inner join mesa m on pm.mesa = m.id
-	    where pm.mesa = ?;
+		select pm.mesa as 'Mesa', p.description as 'Produto', quantity as 'Quantidade', p.price as 'Preco'
+		from produto p inner join pedido pm on p.id = pm.produto
+			inner join mesa m on pm.mesa = m.id
+		where pm.mesa = ?;
 	  `;
 		const [order] = await connection.execute(query, [id]);
 		return order;

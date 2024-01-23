@@ -34,6 +34,8 @@
 				class="order-form-container"
 				style="display: none"
 			>
+				<h2 id="table-form-header"></h2>
+				<br />
 				<form id="order-form">
 					<table id="form-product-table">
 						<tr>
@@ -50,6 +52,22 @@
 						<button id="btnEditar" type="button">Editar</button>
 						<button id="btnApagar" type="button">Apagar</button>
 						<button id="btnFechar" type="button">Fechar</button>
+					</div>
+				</form>
+			</div>
+			<div
+				id="product-form-container"
+				class="product-form-container"
+				style="display: none"
+			>
+				<form id="product-form">
+					<label for="select-form">Produto:</label>
+					<select name="select-form" id="select-form"></select>
+					<label for="ipt-quantidade">Quantidade</label>
+					<input id="ipt-quantidade" type="number" min="1" />
+					<div class="dashboard">
+						<button id="btnAdd" type="button">Adicionar</button>
+						<button id="btnCancel" type="button">Cancelar</button>
 					</div>
 				</form>
 			</div>
