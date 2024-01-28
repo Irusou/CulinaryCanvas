@@ -396,6 +396,10 @@ form * {
 	background-color: var(--tb-selected);
 	color: var(--font-color-selected) !important;
 }
+.selected-prod td {
+	background-color: var(--tb-selected);
+	color: var(--font-color-selected) !important;
+}
 
 .type-table-header {
 	background-color: var(--border-primary);
@@ -475,7 +479,7 @@ form * {
 	border-radius: 0 0 0 8px;
 }
 
-.product-table tr:not(.product-table-header):is(.selected-row) {
+.product-table tr:not(.product-table-header):is(.selected-prod) {
 	background-color: var(--tb-selected);
 	color: var(--font-color-selected);
 }

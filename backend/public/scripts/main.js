@@ -121,6 +121,9 @@ function init() {
 						headers: { "content-type": "application/json" },
 						body: JSON.stringify(product),
 					});
+					document.getElementById("ipt-prod-description").value = "";
+					document.getElementById("ipt-prod-price").value = "";
+					document.getElementById("select-prod-type").value = "";
 					await util.loadProducts();
 				}
 			});
@@ -129,9 +132,54 @@ function init() {
 			editeProductBtn.classList.add("product-editBtn");
 			editeProductBtn.textContent = "Editar";
 
+			editeProductBtn.addEventListener("click", async (e) => {
+				const row = document.querySelector(".selected-prod");
+
+				if (row) {
+					createProductContainer.style.display = "flex";
+					let desc = document.getElementById("ipt-prod-description").value;
+					let tipo = document.getElementById("select-prod-type").value;
+					let price = document.getElementById("ipt-prod-price").value;
+
+					var product = {
+						description: desc,
+						tipo,
+						price,
+						id: row.id,
+					};
+					console.log(product);
+					if (
+						product.description &&
+						product.price &&
+						product.tipo &&
+						product.id
+					) {
+						await fetch(`http://localhost:4040/products`, {
+							method: "PUT",
+							headers: { "Content-Type": "application/json" },
+							body: JSON.stringify(product),
+						});
+						document.getElementById("ipt-prod-description").value = "";
+						document.getElementById("select-prod-type").value = "";
+						document.getElementById("ipt-prod-price").value = "";
+						await util.loadProducts();
+					}
+				}
+			});
+
 			const deleteProductBtn = document.createElement("button");
 			deleteProductBtn.classList.add("product-deleteBtn");
 			deleteProductBtn.textContent = "Apagar";
+
+			deleteProductBtn.addEventListener("click", async (e) => {
+				const row = document.querySelector(".selected-prod");
+				if (row) {
+					await fetch(`http://localhost:4040/products/${row.id}`, {
+						method: "DELETE",
+					});
+					await util.loadProducts();
+				}
+			});
 
 			dashboard.appendChild(createProductBtn);
 			dashboard.appendChild(editeProductBtn);
@@ -345,10 +393,10 @@ function init() {
 			tr.id = p.ID;
 
 			tr.addEventListener("click", () => {
-				if (!tr.classList.contains("selected-row")) {
-					tr.classList.add("selected-row");
+				if (!tr.classList.contains("selected-prod")) {
+					tr.classList.add("selected-prod");
 				} else {
-					tr.classList.remove("selected-row");
+					tr.classList.remove("selected-prod");
 				}
 			});
 
@@ -356,6 +404,7 @@ function init() {
 			tdDescription.textContent = p.Produto;
 
 			const tdType = document.createElement("td");
+			tdType.id = p.Tipo.id;
 			tdType.textContent = p.Tipo.slice(0, 1);
 
 			const tdPrice = document.createElement("td");
@@ -456,7 +505,7 @@ function init() {
 
 	const createFormTypeSelect = (types) => {
 		var select = document.getElementById("select-prod-type");
-		console.log(select);
+
 		select.replaceChildren();
 		const headerOption = document.createElement("option");
 		headerOption.textContent = "";
