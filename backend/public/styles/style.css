@@ -338,6 +338,38 @@ form * {
 	border-radius: 0 5px 0 0;
 }
 
+.products-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
+}
+
+.products-container .dashboard {
+	display: flex;
+	gap: 5px;
+}
+
+.create-product-form-container .create-product-form {
+	margin-top: 20px;
+	display: flex;
+	flex-direction: column;
+	background-color: var(--bg-ternary);
+	padding: 10px;
+	border-radius: 8px;
+	gap: 10px;
+}
+
+.create-product-form input,
+.create-product-form select {
+	background-color: var(--bg-primary);
+	border: 2px solid var(--font-color-primary);
+	border-radius: 5px;
+	padding: 5px;
+	color: var(--font-color-primary);
+}
+
 .type-table {
 	text-align: center;
 }
@@ -362,7 +394,7 @@ form * {
 
 .selected-row td {
 	background-color: var(--tb-selected);
-	color: var(--font-color-selected);
+	color: var(--font-color-selected) !important;
 }
 
 .type-table-header {
@@ -406,6 +438,51 @@ form * {
 	padding-left: 5px;
 	border-radius: 5px;
 	height: 30px;
+}
+
+/* CREATE PRODUCT TABLE STYLING */
+.product-table .product-table-header td {
+	padding: 8px;
+	background-color: var(--border-primary);
+	text-align: start;
+}
+
+.product-table tr:not(.product-table-header) td {
+	color: var(--font-color-secondary);
+}
+
+.product-table .product-table-header td:nth-child(1) {
+	border-radius: 8px 0 0 0;
+}
+
+.product-table .product-table-header td:nth-child(3) {
+	border-radius: 0 8px 0 0;
+}
+
+.product-table tr:not(.product-table-header):nth-child(even) {
+	background-color: var(--tb-even);
+}
+
+.product-table tr:not(.product-table-header):nth-child(odd) {
+	background-color: var(--tb-odd);
+}
+
+.product-table tr:not(.product-table-header):last-child td:last-child {
+	border-radius: 0 0 8px 0;
+}
+
+.product-table tr:not(.product-table-header):last-child td:first-child {
+	border-radius: 0 0 0 8px;
+}
+
+.product-table tr:not(.product-table-header):is(.selected-row) {
+	background-color: var(--tb-selected);
+	color: var(--font-color-selected);
+}
+/* END OF CREATE PRODUCT TABLE STYLING */
+
+.create-product-form-container {
+	margin-left: 100px;
 }
 
 #product-form .dashboard {

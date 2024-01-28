@@ -95,6 +95,49 @@ function init() {
 			const table = createProductsTable(this.products);
 			createProductsSelect(this.products);
 			productsContainer.appendChild(table);
+
+			const dashboard = document.createElement("div");
+			dashboard.classList.add("dashboard");
+
+			const createProductBtn = document.createElement("button");
+			createProductBtn.classList.add("product-addBtn");
+			createProductBtn.textContent = "Criar";
+
+			var types = await util.fetchTypes();
+			createFormTypeSelect(types);
+
+			createProductBtn.addEventListener("click", async (e) => {
+				createProductContainer.style.display = "flex";
+
+				var product = {
+					description: document.getElementById("ipt-prod-description").value,
+					price: document.getElementById("ipt-prod-price").value,
+					tipo: document.getElementById("select-prod-type").value,
+				};
+
+				if (product.description && product.price && product.tipo) {
+					await fetch("http://localhost:4040/products", {
+						method: "POST",
+						headers: { "content-type": "application/json" },
+						body: JSON.stringify(product),
+					});
+					await util.loadProducts();
+				}
+			});
+
+			const editeProductBtn = document.createElement("button");
+			editeProductBtn.classList.add("product-editBtn");
+			editeProductBtn.textContent = "Editar";
+
+			const deleteProductBtn = document.createElement("button");
+			deleteProductBtn.classList.add("product-deleteBtn");
+			deleteProductBtn.textContent = "Apagar";
+
+			dashboard.appendChild(createProductBtn);
+			dashboard.appendChild(editeProductBtn);
+			dashboard.appendChild(deleteProductBtn);
+
+			productsContainer.appendChild(dashboard);
 		}
 
 		async loadTypes() {
@@ -113,6 +156,7 @@ function init() {
 			const deleteButton = document.createElement("button");
 			deleteButton.classList.add("type-deleteBtn");
 			deleteButton.textContent = "Apagar";
+
 			typesContainer.appendChild(table);
 
 			const input = document.createElement("input");
@@ -176,6 +220,10 @@ function init() {
 		".product-form-container"
 	);
 	const formProductTable = document.getElementById("form-product-table");
+
+	const createProductContainer = document.querySelector(
+		".create-product-form-container"
+	);
 
 	const showTablesLayout = document.querySelector("#table-link");
 	const showProductsLayout = document.querySelector("#product-link");
@@ -246,6 +294,7 @@ function init() {
 		productsContainer.style.display = "none";
 		typesContainer.style.display = "none";
 		tablesContainer.style.display = "flex";
+		createProductContainer.style.display = "none";
 		util.loadTables();
 	});
 
@@ -255,6 +304,7 @@ function init() {
 		productFormContainer.style.display = "none";
 		typesContainer.style.display = "none";
 		tablesContainer.style.display = "none";
+		createProductContainer.style.display = "none";
 		util.loadProducts();
 	});
 
@@ -264,6 +314,7 @@ function init() {
 		productFormContainer.style.display = "none";
 		typesContainer.style.display = "flex";
 		tablesContainer.style.display = "none";
+		createProductContainer.style.display = "none";
 		util.loadTypes();
 	});
 
@@ -291,7 +342,15 @@ function init() {
 
 		products.forEach((p) => {
 			const tr = document.createElement("tr");
-			tr.id = p.id;
+			tr.id = p.ID;
+
+			tr.addEventListener("click", () => {
+				if (!tr.classList.contains("selected-row")) {
+					tr.classList.add("selected-row");
+				} else {
+					tr.classList.remove("selected-row");
+				}
+			});
 
 			const tdDescription = document.createElement("td");
 			tdDescription.textContent = p.Produto;
@@ -393,6 +452,25 @@ function init() {
 			select.appendChild(option);
 		});
 		return select;
+	};
+
+	const createFormTypeSelect = (types) => {
+		var select = document.getElementById("select-prod-type");
+		console.log(select);
+		select.replaceChildren();
+		const headerOption = document.createElement("option");
+		headerOption.textContent = "";
+		headerOption.value = 0;
+		select.appendChild(headerOption);
+
+		types.forEach((type) => {
+			const option = document.createElement("option");
+			option.value = type.id;
+			option.textContent = `${type.description.slice(0, 1)} - ${
+				type.description
+			}`;
+			select.appendChild(option);
+		});
 	};
 
 	const createTypesTable = (types) => {
