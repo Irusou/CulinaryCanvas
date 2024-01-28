@@ -57,9 +57,8 @@ function init() {
 
 		async loadTables() {
 			tablesContainer.replaceChildren();
-			const tables = await this.fetchTables();
-
-			tables.forEach((table) => {
+			this.tables = await this.fetchTables();
+			this.tables.forEach((table) => {
 				const tableElement = document.createElement("div");
 				tableElement.classList.add("mesa");
 				tableElement.textContent = table.id;
@@ -92,17 +91,79 @@ function init() {
 
 		async loadProducts() {
 			productsContainer.replaceChildren();
-			const products = await this.fetchProducts();
-			const table = createProductsTable(products);
-			createProductsSelect(products);
+			this.products = await this.fetchProducts();
+			const table = createProductsTable(this.products);
+			createProductsSelect(this.products);
 			productsContainer.appendChild(table);
 		}
 
 		async loadTypes() {
 			typesContainer.replaceChildren();
-			const types = await this.fetchTypes();
-			const table = createTypesTable(types);
+			this.types = await this.fetchTypes();
+			var table = createTypesTable(this.types);
+
+			const createButton = document.createElement("button");
+			createButton.classList.add("type-addBtn");
+			createButton.textContent = "Criar";
+
+			const editButton = document.createElement("button");
+			editButton.classList.add("type-editBtn");
+			editButton.textContent = "Editar";
+
+			const deleteButton = document.createElement("button");
+			deleteButton.classList.add("type-deleteBtn");
+			deleteButton.textContent = "Apagar";
 			typesContainer.appendChild(table);
+
+			const input = document.createElement("input");
+			input.style.display = "none";
+			input.type = "text";
+			typesContainer.appendChild(input);
+
+			const dashboard = document.createElement("div");
+
+			dashboard.classList.add("dashboard");
+
+			dashboard.appendChild(createButton);
+			dashboard.appendChild(editButton);
+			dashboard.appendChild(deleteButton);
+
+			typesContainer.appendChild(dashboard);
+
+			createButton.addEventListener("click", async (e) => {
+				input.style.display = "block";
+				if (input.value) {
+					await fetch("http://localhost:4040/product-types", {
+						method: "POST",
+						headers: { "Content-type": "application/json" },
+						body: JSON.stringify({ description: input.value }),
+					});
+					await this.loadTypes();
+				}
+			});
+
+			editButton.addEventListener("click", async (e) => {
+				input.style.display = "block";
+				const tr = document.querySelector(".selected-row");
+				if (input.value) {
+					await fetch(`http://localhost:4040/product-types/${tr.id}`, {
+						method: "PUT",
+						headers: { "Content-type": "application/json" },
+						body: JSON.stringify({ description: input.value }),
+					});
+					await this.loadTypes();
+				}
+			});
+
+			deleteButton.addEventListener("click", async (e) => {
+				const row = document.querySelector(".selected-row");
+				if (row) {
+					await fetch(`http://localhost:4040/product-types/${row.id}`, {
+						method: "DELETE",
+					});
+				}
+				await this.loadTypes();
+			});
 		}
 	}
 	const util = new Util();
@@ -138,7 +199,7 @@ function init() {
 		closeTable();
 	});
 
-	btnAdd.addEventListener("click", (e) => {
+	btnAdd.addEventListener("click", async (e) => {
 		e.preventDefault();
 		const product = document.getElementById("select-form").value;
 		const table = document.getElementById("table-form-header");
@@ -150,7 +211,10 @@ function init() {
 		};
 		addToOrder(number, order);
 		formProductTable.replaceChildren();
-		createOrderTable();
+		await createOrderTable();
+		document.getElementById("select-form").value = 0;
+		document.getElementById("select-form").textContent = "";
+		document.getElementById("ipt-quantidade").value = "";
 	});
 
 	btnCancel.addEventListener("click", (e) => {
@@ -187,13 +251,17 @@ function init() {
 
 	showProductsLayout.addEventListener("click", () => {
 		productsContainer.style.display = "flex";
+		orderFormContainer.style.display = "none";
+		productFormContainer.style.display = "none";
 		typesContainer.style.display = "none";
 		tablesContainer.style.display = "none";
 		util.loadProducts();
 	});
 
-	showTypesLayout.addEventListener("click", () => {
+	showTypesLayout.addEventListener("click", (e) => {
 		productsContainer.style.display = "none";
+		orderFormContainer.style.display = "none";
+		productFormContainer.style.display = "none";
 		typesContainer.style.display = "flex";
 		tablesContainer.style.display = "none";
 		util.loadTypes();
@@ -334,8 +402,8 @@ function init() {
 		const header = document.createElement("tr");
 		header.classList.add("type-table-header");
 
-		const thDescription = document.createElement("td");
-		thDescription.textContent = "Tipo";
+		const thDescription = document.createElement("th");
+		thDescription.textContent = "Descrição";
 
 		header.appendChild(thDescription);
 
@@ -344,6 +412,14 @@ function init() {
 		types.forEach((t) => {
 			const tr = document.createElement("tr");
 			tr.id = t.id;
+
+			tr.addEventListener("click", () => {
+				if (!tr.classList.contains("selected-row")) {
+					tr.classList.add("selected-row");
+				} else {
+					tr.classList.remove("selected-row");
+				}
+			});
 
 			const tdDescription = document.createElement("td");
 			tdDescription.textContent = t.description;

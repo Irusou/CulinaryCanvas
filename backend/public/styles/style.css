@@ -338,6 +338,58 @@ form * {
 	border-radius: 0 5px 0 0;
 }
 
+.type-table {
+	text-align: center;
+}
+
+.type-table tr td {
+	padding: 5px;
+}
+
+.types-container {
+	display: flex;
+	width: 400px;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.types-container .dashboard {
+	display: flex;
+	gap: 5px;
+}
+
+.selected-row td {
+	background-color: var(--tb-selected);
+	color: var(--font-color-selected);
+}
+
+.type-table-header {
+	background-color: var(--border-primary);
+	border-radius: 8px 8px 0 0;
+}
+
+.type-table-header th {
+	border-radius: 8px 8px 0 0;
+}
+
+.type-table tr:not(.type-table-header) {
+	color: var(--font-color-secondary);
+}
+
+.type-table tr:nth-child(odd):not(.type-table-header) {
+	background-color: var(--tb-odd);
+}
+
+.type-table tr:nth-child(even) {
+	background-color: var(--tb-even);
+}
+
+.type-table tr:last-child td {
+	border-radius: 0 0 8px 8px;
+}
+
 #product-form {
 	padding: 10px;
 	display: flex;
