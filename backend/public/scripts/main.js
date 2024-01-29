@@ -56,11 +56,13 @@ function init() {
 		}
 
 		async loadTables() {
+			await util.loadProducts();
 			tablesContainer.replaceChildren();
 			this.tables = await this.fetchTables();
 			this.tables.forEach((table) => {
 				const tableElement = document.createElement("div");
 				tableElement.classList.add("mesa");
+				tableElement.id = `table-${table.id}`;
 				tableElement.textContent = table.id;
 				if (table.isOpen) {
 					tableElement.classList.add("aberta");
@@ -147,7 +149,7 @@ function init() {
 						price,
 						id: row.id,
 					};
-					console.log(product);
+
 					if (
 						product.description &&
 						product.price &&
@@ -286,9 +288,47 @@ function init() {
 	const btnAdd = document.querySelector("#btnAdd");
 	const btnCancel = document.querySelector("#btnCancel");
 
-	btnCriar.addEventListener("click", (e) => {
-		util.loadProducts();
+	btnCriar.addEventListener("click", async (e) => {
+		await util.loadProducts();
 		productFormContainer.style.display = "block";
+	});
+
+	btnEditar.addEventListener("click", async (e) => {
+		const tr = document.querySelector(".selected-order");
+		productFormContainer.style.display = "block";
+
+		if (tr) {
+			let table = document
+				.querySelector("#table-form-header")
+				.textContent.split(" ")[1];
+			let product = document.getElementById("select-form").value;
+			let quantity = document.querySelector("#ipt-quantidade").value;
+			if (table && product && quantity) {
+				const row = tr.id.split(" ")[1];
+
+				await fetch(`http://localhost:4040/order-items/${row}`, {
+					method: "PUT",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify({
+						table,
+						product,
+						quantity,
+					}),
+				});
+				await createOrderTable();
+			}
+		}
+	});
+
+	btnApagar.addEventListener("click", async (e) => {
+		const tr = document.querySelector(".selected-order");
+		if (tr) {
+			const row = tr.id.split(" ")[1];
+			await fetch(`http://localhost:4040/order-items/${row}`, {
+				method: "DELETE",
+			});
+			await createOrderTable();
+		}
 	});
 
 	btnFechar.addEventListener("click", (e) => {
@@ -296,7 +336,6 @@ function init() {
 	});
 
 	btnAdd.addEventListener("click", async (e) => {
-		e.preventDefault();
 		const product = document.getElementById("select-form").value;
 		const table = document.getElementById("table-form-header");
 		const quantity = document.getElementById("ipt-quantidade").value;
@@ -305,7 +344,7 @@ function init() {
 			product,
 			quantity,
 		};
-		addToOrder(number, order);
+		await addToOrder(number, order);
 		formProductTable.replaceChildren();
 		await createOrderTable();
 		document.getElementById("select-form").value = 0;
@@ -341,9 +380,10 @@ function init() {
 	showTablesLayout.addEventListener("click", () => {
 		productsContainer.style.display = "none";
 		typesContainer.style.display = "none";
-		tablesContainer.style.display = "flex";
+		tablesContainer.style.display = "grid";
 		createProductContainer.style.display = "none";
 		util.loadTables();
+		util.loadProducts();
 	});
 
 	showProductsLayout.addEventListener("click", () => {
@@ -426,20 +466,8 @@ function init() {
 			.textContent.split(" ")[1];
 		const res = await fetch(`http://localhost:4040/order-items/${number}`);
 		const orders = await res.json();
-		const o = {};
 
-		orders.forEach((order) => {
-			const { Produto, Quantidade, Preco } = order;
-			o[Produto] = {
-				Quantidade: (o[Produto]?.Quantidade || 0) + Quantidade,
-				Preco,
-			};
-		});
-
-		const result = Object.keys(o).map((Produto) => ({
-			Produto,
-			...o[Produto],
-		}));
+		formProductTable.replaceChildren();
 
 		//? populate the table
 		const header = document.createElement("tr");
@@ -458,14 +486,23 @@ function init() {
 
 		formProductTable.appendChild(header);
 
-		result.forEach((row) => {
+		orders.forEach((row) => {
+			const { Pedido, Produto, Quantidade, Preco } = row;
 			const tr = document.createElement("tr");
+			tr.id = `order-row ${Pedido}`;
+
+			tr.addEventListener("click", (e) => {
+				!tr.classList.contains("selected-order")
+					? tr.classList.add("selected-order")
+					: tr.classList.remove("selected-order");
+			});
+
 			const product = document.createElement("th");
-			product.textContent = row.Produto;
+			product.textContent = Produto;
 			const quantity = document.createElement("th");
-			quantity.textContent = row.Quantidade;
+			quantity.textContent = Quantidade;
 			const price = document.createElement("th");
-			price.textContent = row.Preco.toFixed(1);
+			price.textContent = Preco.toFixed(1);
 
 			tr.appendChild(product);
 			tr.appendChild(quantity);
@@ -474,7 +511,7 @@ function init() {
 		});
 
 		//? populate the label
-		const total = calculateTotal(result);
+		const total = calculateTotal(orders);
 		document.getElementById("label-total").textContent = `${total.toFixed(2)}€`;
 	};
 

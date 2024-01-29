@@ -4,8 +4,8 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="./styles/style.css" />
-		<script src="scripts/main.js" defer></script>
-		<title>teste</title>
+		<script src="scripts/index.js" defer></script>
+		<title>CulinaryCanvas</title>
 	</head>
 	<body>
 		<header class="header">
@@ -13,29 +13,63 @@
 			<nav class="navbar">
 				<ul class="list">
 					<li class="item">
-						<a href="#" id="table-link">Mesas</a>
+						<a href="#" id="mesas-link">Mesas</a>
 					</li>
 					<li class="item">
-						<a href="#" id="product-link">Produtos</a>
+						<a href="#" id="produtos-link">Produtos</a>
 					</li>
 					<li class="item">
-						<a href="#" id="type-link">Tipos de Produtos</a>
+						<a href="#" id="tipos-link">Tipos de Produtos</a>
 					</li>
 				</ul>
 			</nav>
 		</header>
 		<main>
-			<div class="tables-container"></div>
-			<div class="products-container"></div>
-			<div class="types-container"></div>
+			<div class="mesas-container" id="mesas-container"></div>
+			<div
+				class="produtos-container"
+				id="produtos-container"
+				style="display: none"
+			>
+				<table id="products-table">
+					<thead id="form-product-table-header">
+						<tr>
+							<th>Descrição</th>
+							<th>Tipo</th>
+							<th>Preço</th>
+						</tr>
+					</thead>
+					<tbody id="form-product-table-body"></tbody>
+				</table>
 
+				<form id="add-product-form">
+					<div id="inputs" class="inputs">
+						<label for="ipt-desc">Descrição</label>
+						<input type="text" name="ipt-desc" id="ipt-desc" />
+
+						<label for="ipt-type">Tipo</label>
+						<select name="ipt-type" id="ipt-type">
+							<option value="E">Entrada</option>
+							<option value="B">Bebida</option>
+							<option value="P">Prato Principal</option>
+							<option value="S">Sobremesa</option>
+						</select>
+
+						<label for="ipt-price">Preço</label>
+						<input type="number" name="ipt-price" id="ipt-price" min="0.0" />
+					</div>
+					<div class="dashboard">
+						<button id="btCriar">Criar</button>
+						<button id="btEditar">Editar</button>
+						<button id="btApagar">Apagar</button>
+					</div>
+				</form>
+			</div>
 			<div
 				id="order-form-container"
 				class="order-form-container"
 				style="display: none"
 			>
-				<h2 id="table-form-header"></h2>
-				<br />
 				<form id="order-form">
 					<table id="form-product-table">
 						<tr>
@@ -61,29 +95,16 @@
 				style="display: none"
 			>
 				<form id="product-form">
-					<label for="select-form">Produto:</label>
-					<select name="select-form" id="select-form"></select>
+					<label for="select-product">Produto</label>
+					<select name="select-product" id="select-product">
+						<option value="">Escolher produto</option>
+					</select>
 					<label for="ipt-quantidade">Quantidade</label>
 					<input id="ipt-quantidade" type="number" min="1" />
 					<div class="dashboard">
 						<button id="btnAdd" type="button">Adicionar</button>
 						<button id="btnCancel" type="button">Cancelar</button>
 					</div>
-				</form>
-			</div>
-			<div class="create-product-form-container" style="display: none">
-				<form class="create-product-form" name="create-product-form">
-					<label for="ipt-prod-description">Descrição</label>
-					<input type="text" id="ipt-prod-description" />
-					<label for="select-prod-type">Tipo</label>
-					<select name="select-prod-type" id="select-prod-type"></select>
-					<label for="ipt-prod-price">Preço</label>
-					<input
-						type="number"
-						name="ipt-prod-price"
-						id="ipt-prod-price"
-						min="0"
-					/>
 				</form>
 			</div>
 		</main>
